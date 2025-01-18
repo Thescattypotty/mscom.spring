@@ -14,6 +14,7 @@ public class ProductMapper {
         return Product.builder()
             .name(productRequest.name())
             .description(productRequest.description())
+            .category(productRequest.category())
             .imageUrl(productRequest.imageUrl())
             .price(productRequest.price())
             .build();
@@ -24,6 +25,7 @@ public class ProductMapper {
             product.getId().toString(),
             product.getName(),
             product.getDescription(),
+            product.getCategory(),
             product.getImageUrl(),
             product.getPrice(),
             product.getCreatedAt().format(formatter),

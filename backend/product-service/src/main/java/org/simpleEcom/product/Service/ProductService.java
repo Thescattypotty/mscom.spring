@@ -1,11 +1,11 @@
 
 package org.simpleEcom.product.Service;
 
-import java.util.List;
 import java.util.UUID;
 
 import org.simpleEcom.product.Entity.Product;
 import org.simpleEcom.product.EntityRepository.ProductRepository;
+import org.simpleEcom.product.Exception.ProductNotFoundException;
 import org.simpleEcom.product.IService.IProductService;
 import org.simpleEcom.product.Payload.Mapper.ProductMapper;
 import org.simpleEcom.product.Payload.Request.ProductRequest;
@@ -35,7 +35,7 @@ public class ProductService implements IProductService {
     @Transactional
     public void updateProduct(String id, ProductRequest productRequest) {
         Product product = productRepository.findById(UUID.fromString(id))
-            .orElseThrow();
+            .orElseThrow(() -> new ProductNotFoundException());
         product.setName(productRequest.name());
         product.setDescription(productRequest.description());
         product.setPrice(productRequest.price());
@@ -45,6 +45,9 @@ public class ProductService implements IProductService {
     @Override
     @Transactional
     public void deleteProduct(String id) {
+        if(!productRepository.existsById(UUID.fromString(id))) {
+            throw new ProductNotFoundException();
+        }
         productRepository.deleteById(UUID.fromString(id));
     }
 
@@ -57,7 +60,8 @@ public class ProductService implements IProductService {
 
     @Override
     public ProductResponse getProductById(String id) {
-        Product product = productRepository.findById(UUID.fromString(id)).orElseThrow();
-        return productMapper.fromProduct(product);
+        return productRepository.findById(UUID.fromString(id))
+            .map(productMapper::fromProduct)
+            .orElseThrow(() -> new ProductNotFoundException()); 
     }
 }

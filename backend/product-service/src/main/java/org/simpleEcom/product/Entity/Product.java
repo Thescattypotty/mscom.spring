@@ -3,12 +3,15 @@ package org.simpleEcom.product.Entity;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import org.simpleEcom.product.Enum.ECategory;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -45,6 +48,9 @@ public class Product {
     private String name;
 
     private String description;
+
+    @Enumerated(EnumType.STRING)
+    private ECategory category;
 
     private String imageUrl;
     

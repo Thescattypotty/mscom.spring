@@ -1,0 +1,33 @@
+server:
+  port: 8020
+
+  # H2 Database Configuration (PostgreSQL compatibility)
+spring:
+  datasource:
+    url: jdbc:h2:mem:user
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: 
+
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 10
+      auto-commit: false
+      transaction-isolation: TRANSACTION_READ_COMMITTED
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        connection:
+          driver_class: org.h2.Driver
+        format_sql: true
+
+  
+  h2:
+    console:
+      enabled: true
+      path: /h2-console

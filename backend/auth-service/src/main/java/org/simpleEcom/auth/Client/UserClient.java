@@ -1,5 +1,6 @@
 package org.simpleEcom.auth.Client;
 
+import org.simpleEcom.auth.Configuration.FeignClientConfiguration;
 import org.simpleEcom.auth.Payload.Request.LoginRequest;
 import org.simpleEcom.auth.Payload.Request.RegisterRequest;
 import org.simpleEcom.auth.Payload.Response.VerificationResponse;
@@ -8,7 +9,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @FeignClient(
-    name = "user-service"
+    name = "user-service",
+    configuration = FeignClientConfiguration.class
 )
 public interface UserClient {
     @PostMapping("/api/v1/users/verify-credentials")

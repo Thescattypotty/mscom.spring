@@ -1,12 +1,13 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Unstable_Grid2';
 import Pagination from '@mui/material/Pagination';
 import Typography from '@mui/material/Typography';
 
-import { _products } from 'src/_mock';
 import { DashboardContent } from 'src/layouts/dashboard';
+import { listProducts } from 'src/services/product.service';
+import { ECategory, PeagableResponse, type Pageable, type ProductResponse } from 'src/intefaces';
 
 import { ProductItem } from '../product-item';
 import { ProductSort } from '../product-sort';
@@ -17,128 +18,121 @@ import type { FiltersProps } from '../product-filters';
 
 // ----------------------------------------------------------------------
 
-const GENDER_OPTIONS = [
-  { value: 'men', label: 'Men' },
-  { value: 'women', label: 'Women' },
-  { value: 'kids', label: 'Kids' },
-];
 
 const CATEGORY_OPTIONS = [
   { value: 'all', label: 'All' },
-  { value: 'shose', label: 'Shose' },
-  { value: 'apparel', label: 'Apparel' },
-  { value: 'accessories', label: 'Accessories' },
+  ...Object.values(ECategory).map((category) => ({
+    value: category,
+    label: category,
+  })),
 ];
 
-const RATING_OPTIONS = ['up4Star', 'up3Star', 'up2Star', 'up1Star'];
-
-const PRICE_OPTIONS = [
-  { value: 'below', label: 'Below $25' },
-  { value: 'between', label: 'Between $25 - $75' },
-  { value: 'above', label: 'Above $75' },
-];
-
-const COLOR_OPTIONS = [
-  '#00AB55',
-  '#000000',
-  '#FFFFFF',
-  '#FFC0CB',
-  '#FF4842',
-  '#1890FF',
-  '#94D82D',
-  '#FFC107',
-];
 
 const defaultFilters = {
-  price: '',
-  gender: [GENDER_OPTIONS[0].value],
-  colors: [COLOR_OPTIONS[4]],
-  rating: RATING_OPTIONS[0],
   category: CATEGORY_OPTIONS[0].value,
 };
 
 export function ProductsView() {
-  const [sortBy, setSortBy] = useState('featured');
+    const [products, setProducts] = useState<ProductResponse[]>([]);
+    const [pageableResponse , setPageableResponse] = useState<PeagableResponse<ProductResponse>>();
+    const [pageable, setPeagable] = useState<Pageable>({
+      page: 1,
+      size: 10,
+      sortBy: 'price',
+      order: 'desc',
+    });
 
-  const [openFilter, setOpenFilter] = useState(false);
 
-  const [filters, setFilters] = useState<FiltersProps>(defaultFilters);
 
-  const handleOpenFilter = useCallback(() => {
-    setOpenFilter(true);
-  }, []);
+    useEffect(() => {
+        fetchProducts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [pageable]);
 
-  const handleCloseFilter = useCallback(() => {
-    setOpenFilter(false);
-  }, []);
+    const fetchProducts = async () => {
+        const { data } = await listProducts(pageable);
+        setPageableResponse(data);
+        setProducts(data.content);
+        console.log(data);
+    };
 
-  const handleSort = useCallback((newSort: string) => {
-    setSortBy(newSort);
-  }, []);
+    const [sortBy, setSortBy] = useState('price');
 
-  const handleSetFilters = useCallback((updateState: Partial<FiltersProps>) => {
-    setFilters((prevValue) => ({ ...prevValue, ...updateState }));
-  }, []);
+    const [openFilter, setOpenFilter] = useState(false);
 
-  const canReset = Object.keys(filters).some(
-    (key) => filters[key as keyof FiltersProps] !== defaultFilters[key as keyof FiltersProps]
-  );
+    const [filters, setFilters] = useState<FiltersProps>(defaultFilters);
 
-  return (
-    <DashboardContent>
-      <Typography variant="h4" sx={{ mb: 5 }}>
-        Products
-      </Typography>
+    const handleOpenFilter = useCallback(() => {
+        setOpenFilter(true);
+    }, []);
 
-      <CartIcon totalItems={8} />
+    const handleCloseFilter = useCallback(() => {
+        setOpenFilter(false);
+    }, []);
 
-      <Box
-        display="flex"
-        alignItems="center"
-        flexWrap="wrap-reverse"
-        justifyContent="flex-end"
-        sx={{ mb: 5 }}
-      >
-        <Box gap={1} display="flex" flexShrink={0} sx={{ my: 1 }}>
-          <ProductFilters
-            canReset={canReset}
-            filters={filters}
-            onSetFilters={handleSetFilters}
-            openFilter={openFilter}
-            onOpenFilter={handleOpenFilter}
-            onCloseFilter={handleCloseFilter}
-            onResetFilter={() => setFilters(defaultFilters)}
-            options={{
-              genders: GENDER_OPTIONS,
-              categories: CATEGORY_OPTIONS,
-              ratings: RATING_OPTIONS,
-              price: PRICE_OPTIONS,
-              colors: COLOR_OPTIONS,
-            }}
-          />
+    const handleSort = useCallback((newSort: string) => {
+        setSortBy(newSort);
+    }, []);
 
-          <ProductSort
-            sortBy={sortBy}
-            onSort={handleSort}
-            options={[
-              { value: 'featured', label: 'Featured' },
-              { value: 'newest', label: 'Newest' },
-              { value: 'priceDesc', label: 'Price: High-Low' },
-              { value: 'priceAsc', label: 'Price: Low-High' },
-            ]}
-          />
+    const handleSetFilters = useCallback((updateState: Partial<FiltersProps>) => {
+        setFilters((prevValue) => ({ ...prevValue, ...updateState }));
+    }, []);
+
+    const canReset = Object.keys(filters).some(
+        (key) => filters[key as keyof FiltersProps] !== defaultFilters[key as keyof FiltersProps]
+    );
+
+    return (
+      <DashboardContent>
+        <Typography variant="h4" sx={{ mb: 5 }}>
+          Products
+        </Typography>
+
+        <CartIcon totalItems={8} />
+
+        <Box
+          display="flex"
+          alignItems="center"
+          flexWrap="wrap-reverse"
+          justifyContent="flex-end"
+          sx={{ mb: 5 }}
+        >
+          <Box gap={1} display="flex" flexShrink={0} sx={{ my: 1 }}>
+            <ProductFilters
+              canReset={canReset}
+              filters={filters}
+              onSetFilters={handleSetFilters}
+              openFilter={openFilter}
+              onOpenFilter={handleOpenFilter}
+              onCloseFilter={handleCloseFilter}
+              onResetFilter={() => setFilters(defaultFilters)}
+              options={{
+                categories: CATEGORY_OPTIONS
+              }}
+            />
+
+            <ProductSort
+              sortBy={sortBy}
+              onSort={handleSort}
+              options={[
+                { value: 'createdAtDesc', label: 'Newest' },
+                { value: 'createdAtAsc', label: 'Oldest' },
+                { value: 'priceDesc', label: 'Price: High-Low' },
+                { value: 'priceAsc', label: 'Price: Low-High' },
+              ]}
+            />
+          </Box>
         </Box>
-      </Box>
 
-      <Grid container spacing={3}>
-        {_products.map((product) => (
-          <Grid key={product.id} xs={12} sm={6} md={3}>
-            <ProductItem product={product} />
-          </Grid>
-        ))}
-      </Grid>
+        <Grid container spacing={3}>
+          {products.map((product) => (
+            <Grid key={product.id} xs={12} sm={6} md={3}>
+              <ProductItem product={product} />
+            </Grid>
+          ))}
+        </Grid>
 
-      <Pagination count={10} color="primary" sx={{ mt: 8, mx: 'auto' }} />
-    </DashboardContent>
-  );
+        <Pagination count={pageableResponse?.totalElements} color="primary" sx={{ mt: 8, mx: 'auto' }} />
+      </DashboardContent>
+    );
 }

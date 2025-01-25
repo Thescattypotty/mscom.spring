@@ -7,4 +7,5 @@ export * from "./category.enum";
 export * from "./login.request";
 export * from "./product.request";
 export * from "./product.response";
+export * from "./peagable.response";
 export * from "./user.create.request";

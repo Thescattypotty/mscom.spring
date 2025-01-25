@@ -1,3 +1,5 @@
+import type { ProductResponse } from 'src/intefaces';
+
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Card from '@mui/material/Card';
@@ -6,43 +8,17 @@ import Typography from '@mui/material/Typography';
 
 import { fCurrency } from 'src/utils/format-number';
 
-import { Label } from 'src/components/label';
-import { ColorPreview } from 'src/components/color-utils';
-
 // ----------------------------------------------------------------------
 
-export type ProductItemProps = {
-  id: string;
-  name: string;
-  price: number;
-  status: string;
-  coverUrl: string;
-  colors: string[];
-  priceSale: number | null;
-};
 
-export function ProductItem({ product }: { product: ProductItemProps }) {
-  const renderStatus = (
-    <Label
-      variant="inverted"
-      color={(product.status === 'sale' && 'error') || 'info'}
-      sx={{
-        zIndex: 9,
-        top: 16,
-        right: 16,
-        position: 'absolute',
-        textTransform: 'uppercase',
-      }}
-    >
-      {product.status}
-    </Label>
-  );
+export function ProductItem({ product }: { product: ProductResponse }) {
+
 
   const renderImg = (
     <Box
       component="img"
       alt={product.name}
-      src={product.coverUrl}
+      src={product.imageUrl}
       sx={{
         top: 0,
         width: 1,
@@ -63,7 +39,7 @@ export function ProductItem({ product }: { product: ProductItemProps }) {
           textDecoration: 'line-through',
         }}
       >
-        {product.priceSale && fCurrency(product.priceSale)}
+        {product.price && fCurrency(product.price)}
       </Typography>
       &nbsp;
       {fCurrency(product.price)}
@@ -73,8 +49,6 @@ export function ProductItem({ product }: { product: ProductItemProps }) {
   return (
     <Card>
       <Box sx={{ pt: '100%', position: 'relative' }}>
-        {product.status && renderStatus}
-
         {renderImg}
       </Box>
 
@@ -84,7 +58,6 @@ export function ProductItem({ product }: { product: ProductItemProps }) {
         </Link>
 
         <Box display="flex" alignItems="center" justifyContent="space-between">
-          <ColorPreview colors={product.colors} />
           {renderPrice}
         </Box>
       </Stack>

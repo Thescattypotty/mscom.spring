@@ -3,10 +3,11 @@
 import type { AxiosResponse } from "axios";
 import axiosInstance from "src/interceptor/AxiosInstance";
 import type { Pageable, ProductRequest, ProductResponse } from "src/intefaces";
+import type { PeagableResponse } from "src/intefaces/peagable.response";
 
 const REST_API_URL = "products";
 
-export const listProducts = async (pageable: Pageable): Promise<AxiosResponse<ProductResponse[]>> =>
+export const listProducts = async (pageable: Pageable): Promise<AxiosResponse<PeagableResponse<ProductResponse>>> =>
     axiosInstance.get(REST_API_URL, {
         params: {
             page: pageable.page,

@@ -31,10 +31,4 @@ public class AuthenticationController {
         authenticationService.register(registerRequest);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
-
-    @PostMapping("/logout")
-    public ResponseEntity<Void> logout() {
-        authenticationService.logout();
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
 }

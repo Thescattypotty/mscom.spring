@@ -32,9 +32,4 @@ public class AuthenticationService implements IAuthenticationService{
         userClient.createUser(registerRequest);
     }
 
-    @Override
-    public void logout() {
-        System.out.println("User logged out");
-    }
-    
 }

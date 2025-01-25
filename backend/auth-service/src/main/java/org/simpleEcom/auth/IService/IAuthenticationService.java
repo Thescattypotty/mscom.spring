@@ -7,5 +7,4 @@ import org.simpleEcom.auth.Payload.Response.JwtResponse;
 public interface IAuthenticationService {
     JwtResponse login(LoginRequest loginRequest);
     void register(RegisterRequest registerRequest);
-    void logout();
 }

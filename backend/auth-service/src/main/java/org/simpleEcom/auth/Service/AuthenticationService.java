@@ -20,7 +20,8 @@ public class AuthenticationService implements IAuthenticationService{
     @Override
     public JwtResponse login(LoginRequest loginRequest) {
         VerificationResponse verification = userClient.verifyUserCredentials(loginRequest);
-        if(verification.verified()){
+        System.out.println("Verification response: " + verification.verified());
+        if(Boolean.TRUE.equals(verification.verified())) {
             return new JwtResponse(jwtService.generateToken(loginRequest.email(),verification.roles()));
         } else {
             throw new RuntimeException("Invalid credentials");

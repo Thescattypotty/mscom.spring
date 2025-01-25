@@ -26,7 +26,7 @@ public class DatabaseInitializer implements CommandLineRunner{
                     "firstName" + i,
                     "lastName" + i,
                     "email" + i + "@gmail.com",
-                    "password" + i,
+                    "password",
                     Set.of(ERole.ROLE_ADMIN, ERole.ROLE_USER, ERole.ROLE_SELLER),
                     LocalDate.now().minusYears(20).minusDays(i)
                 )

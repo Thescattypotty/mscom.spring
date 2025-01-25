@@ -1,6 +1,7 @@
 package org.simpleEcom.user.Service;
 
 import java.util.HashSet;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import org.simpleEcom.user.Entity.User;
@@ -78,9 +79,10 @@ public class UserService implements IUserService{
 
     @Override
     public VerificationResponse verifyCredentials(LoginRequest loginRequest){
-        User user = userRepository.findByEmail(loginRequest.email())
-            .orElse(null);
-        if(user == null){
+        User user = null;
+        try {
+            user = userRepository.findByEmail(loginRequest.email()).get();
+        } catch (NoSuchElementException e) {
             return new VerificationResponse(false, new HashSet<>());
         }
 

@@ -1,0 +1,6 @@
+server:
+  port: 8040
+
+jwt:
+  secret: ihzu3h4i
+  expiration: 86400000

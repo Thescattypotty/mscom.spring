@@ -8,7 +8,7 @@
         <version>1.0.0</version>
 	</parent>
 	<groupId>org.simpleEcom</groupId>
-	<artifactId>registry-service</artifactId>
+	<artifactId>registry</artifactId>
     <version>1.0.0</version>
 	<name>registry-service</name>
 	<description>Demo project for Spring Boot</description>

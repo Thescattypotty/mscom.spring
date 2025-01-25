@@ -13,9 +13,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.simpleEcom.user.Payload.Request.LoginRequest;
 import org.simpleEcom.user.Payload.Request.UserCreateRequest;
 import org.simpleEcom.user.Payload.Request.UserRequest;
 import org.simpleEcom.user.Payload.Response.UserResponse;
+import org.simpleEcom.user.Payload.Response.VerificationResponse;
 
 import lombok.RequiredArgsConstructor;
 
@@ -57,5 +59,10 @@ public class UserController {
         @RequestParam(defaultValue = "asc") String order
     ) {
         return new ResponseEntity<>(userService.getUsers(page, size, sortBy, order), HttpStatus.OK);
+    }
+
+    @PostMapping("/verify-credentials")
+    public ResponseEntity<VerificationResponse> verifyCredentials(@RequestBody LoginRequest loginRequest){
+        return new ResponseEntity<>(userService.verifyCredentials(loginRequest),HttpStatus.OK);
     }
 }

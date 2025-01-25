@@ -56,6 +56,7 @@
         <module>registry-service</module>
         <module>product-service</module>
         <module>user-service</module>
+        <module>auth-service</module>
         <module>order-service</module>
     </modules>
     

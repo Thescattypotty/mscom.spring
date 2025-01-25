@@ -7,8 +7,9 @@
         <artifactId>core-service</artifactId>
         <version>1.0.0</version>
 	</parent>
+    
     <groupId>org.simpleEcom</groupId>
-	<artifactId>user-service</artifactId>
+	<artifactId>user</artifactId>
     <version>1.0.0</version>
 	<name>user-service</name>
 

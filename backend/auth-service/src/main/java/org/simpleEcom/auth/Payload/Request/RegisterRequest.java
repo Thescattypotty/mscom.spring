@@ -1,15 +1,13 @@
-package org.simpleEcom.user.Payload.Request;
+package org.simpleEcom.auth.Payload.Request;
 
 import java.time.LocalDate;
 import java.util.Set;
-
-import org.simpleEcom.user.Enum.ERole;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-public record UserCreateRequest(
+public record RegisterRequest(
     String firstName,
 
     String lastName,
@@ -22,7 +20,7 @@ public record UserCreateRequest(
     @NotBlank(message = "Password is required")
     String password,
     
-    Set<ERole> roles,
+    Set<String> roles,
     
     LocalDate birthday
 ) {

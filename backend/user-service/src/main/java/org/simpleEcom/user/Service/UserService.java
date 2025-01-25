@@ -1,5 +1,6 @@
 package org.simpleEcom.user.Service;
 
+import java.util.HashSet;
 import java.util.UUID;
 
 import org.simpleEcom.user.Entity.User;
@@ -7,9 +8,11 @@ import org.simpleEcom.user.EntityRepository.UserRepository;
 import org.simpleEcom.user.Exception.UserNotFoundException;
 import org.simpleEcom.user.IService.IUserService;
 import org.simpleEcom.user.Payload.Mapper.UserMapper;
+import org.simpleEcom.user.Payload.Request.LoginRequest;
 import org.simpleEcom.user.Payload.Request.UserCreateRequest;
 import org.simpleEcom.user.Payload.Request.UserRequest;
 import org.simpleEcom.user.Payload.Response.UserResponse;
+import org.simpleEcom.user.Payload.Response.VerificationResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -71,5 +74,19 @@ public class UserService implements IUserService{
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(order), sortBy));
         return userRepository.findAll(pageable)
             .map(userMapper::fromUser);
+    }
+
+    @Override
+    public VerificationResponse verifyCredentials(LoginRequest loginRequest){
+        User user = userRepository.findByEmail(loginRequest.email())
+            .orElse(null);
+        if(user == null){
+            return new VerificationResponse(false, new HashSet<>());
+        }
+
+        return new VerificationResponse(
+            passwordEncoder.matches(loginRequest.password(), user.getPassword()),
+            user.getRoles()
+        );
     }
 }

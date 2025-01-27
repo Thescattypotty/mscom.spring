@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -10,7 +10,9 @@ import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
 import { _users } from 'src/_mock';
+import { listUsers } from 'src/services/user.service';
 import { DashboardContent } from 'src/layouts/dashboard';
+import { type Pageable, type UserResponse, type PeagableResponse } from 'src/intefaces';
 
 import { Iconify } from 'src/components/iconify';
 import { Scrollbar } from 'src/components/scrollbar';
@@ -27,105 +29,127 @@ import type { UserProps } from '../user-table-row';
 // ----------------------------------------------------------------------
 
 export function UserView() {
-  const table = useTable();
+    const table = useTable();
 
-  const [filterName, setFilterName] = useState('');
+    const [users , setUsers] = useState<UserResponse[]>([]);
+    const [pageableResponse, setPeagableResponse] = useState<PeagableResponse<UserResponse>>();
+    const [pageable, setPeagable] = useState<Pageable>({
+        page: 1,
+        size: 10,
+        sortBy: 'createdAt',
+        order: 'desc',
+    })
+    useEffect(() => {
+        fetchUsers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [pageable]);
 
-  const dataFiltered: UserProps[] = applyFilter({
-    inputData: _users,
-    comparator: getComparator(table.order, table.orderBy),
-    filterName,
-  });
+    const fetchUsers = async () => {
+        console.log("fetching users");
+        const { data } = await listUsers(pageable);
+        console.log(data);
+        setPeagableResponse(data);
+        setUsers(data.content);
+    }
+    
 
-  const notFound = !dataFiltered.length && !!filterName;
+    const [filterName, setFilterName] = useState('');
 
-  return (
-    <DashboardContent>
-      <Box display="flex" alignItems="center" mb={5}>
-        <Typography variant="h4" flexGrow={1}>
-          Users
-        </Typography>
-        <Button
-          variant="contained"
-          color="inherit"
-          startIcon={<Iconify icon="mingcute:add-line" />}
-        >
-          New user
-        </Button>
-      </Box>
+    const dataFiltered: UserProps[] = applyFilter({
+        inputData: _users,
+        comparator: getComparator(table.order, table.orderBy),
+        filterName,
+    });
 
-      <Card>
-        <UserTableToolbar
-          numSelected={table.selected.length}
-          filterName={filterName}
-          onFilterName={(event: React.ChangeEvent<HTMLInputElement>) => {
-            setFilterName(event.target.value);
-            table.onResetPage();
-          }}
-        />
+    const notFound = !dataFiltered.length && !!filterName;
 
-        <Scrollbar>
-          <TableContainer sx={{ overflow: 'unset' }}>
-            <Table sx={{ minWidth: 800 }}>
-              <UserTableHead
-                order={table.order}
-                orderBy={table.orderBy}
-                rowCount={_users.length}
-                numSelected={table.selected.length}
-                onSort={table.onSort}
-                onSelectAllRows={(checked) =>
-                  table.onSelectAllRows(
-                    checked,
-                    _users.map((user) => user.id)
-                  )
-                }
-                headLabel={[
-                  { id: 'name', label: 'Name' },
-                  { id: 'company', label: 'Company' },
-                  { id: 'role', label: 'Role' },
-                  { id: 'isVerified', label: 'Verified', align: 'center' },
-                  { id: 'status', label: 'Status' },
-                  { id: '' },
-                ]}
-              />
-              <TableBody>
-                {dataFiltered
-                  .slice(
-                    table.page * table.rowsPerPage,
-                    table.page * table.rowsPerPage + table.rowsPerPage
-                  )
-                  .map((row) => (
-                    <UserTableRow
-                      key={row.id}
-                      row={row}
-                      selected={table.selected.includes(row.id)}
-                      onSelectRow={() => table.onSelectRow(row.id)}
-                    />
-                  ))}
+    return (
+        <DashboardContent>
+        <Box display="flex" alignItems="center" mb={5}>
+            <Typography variant="h4" flexGrow={1}>
+            Users
+            </Typography>
+            <Button
+            variant="contained"
+            color="inherit"
+            startIcon={<Iconify icon="mingcute:add-line" />}
+            >
+            New user
+            </Button>
+        </Box>
 
-                <TableEmptyRows
-                  height={68}
-                  emptyRows={emptyRows(table.page, table.rowsPerPage, _users.length)}
+        <Card>
+            <UserTableToolbar
+            numSelected={table.selected.length}
+            filterName={filterName}
+            onFilterName={(event: React.ChangeEvent<HTMLInputElement>) => {
+                setFilterName(event.target.value);
+                table.onResetPage();
+            }}
+            />
+
+            <Scrollbar>
+            <TableContainer sx={{ overflow: 'unset' }}>
+                <Table sx={{ minWidth: 800 }}>
+                <UserTableHead
+                    order={table.order}
+                    orderBy={table.orderBy}
+                    rowCount={_users.length}
+                    numSelected={table.selected.length}
+                    onSort={table.onSort}
+                    onSelectAllRows={(checked) =>
+                    table.onSelectAllRows(
+                        checked,
+                        _users.map((user) => user.id)
+                    )
+                    }
+                    headLabel={[
+                    { id: 'name', label: 'Name' },
+                    { id: 'company', label: 'Company' },
+                    { id: 'role', label: 'Role' },
+                    { id: 'isVerified', label: 'Verified', align: 'center' },
+                    { id: 'status', label: 'Status' },
+                    { id: '' },
+                    ]}
                 />
+                <TableBody>
+                    {dataFiltered
+                    .slice(
+                        table.page * table.rowsPerPage,
+                        table.page * table.rowsPerPage + table.rowsPerPage
+                    )
+                    .map((row) => (
+                        <UserTableRow
+                        key={row.id}
+                        row={row}
+                        selected={table.selected.includes(row.id)}
+                        onSelectRow={() => table.onSelectRow(row.id)}
+                        />
+                    ))}
 
-                {notFound && <TableNoData searchQuery={filterName} />}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Scrollbar>
+                    <TableEmptyRows
+                    height={68}
+                    emptyRows={emptyRows(table.page, table.rowsPerPage, _users.length)}
+                    />
 
-        <TablePagination
-          component="div"
-          page={table.page}
-          count={_users.length}
-          rowsPerPage={table.rowsPerPage}
-          onPageChange={table.onChangePage}
-          rowsPerPageOptions={[5, 10, 25]}
-          onRowsPerPageChange={table.onChangeRowsPerPage}
-        />
-      </Card>
-    </DashboardContent>
-  );
+                    {notFound && <TableNoData searchQuery={filterName} />}
+                </TableBody>
+                </Table>
+            </TableContainer>
+            </Scrollbar>
+
+            <TablePagination
+            component="div"
+            page={table.page}
+            count={_users.length}
+            rowsPerPage={table.rowsPerPage}
+            onPageChange={table.onChangePage}
+            rowsPerPageOptions={[5, 10, 25]}
+            onRowsPerPageChange={table.onChangeRowsPerPage}
+            />
+        </Card>
+        </DashboardContent>
+    );
 }
 
 // ----------------------------------------------------------------------

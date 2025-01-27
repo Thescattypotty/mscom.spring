@@ -12,7 +12,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 
 import { useRouter } from 'src/routes/hooks';
 
-import { signIn } from 'src/services/auth.service';
+import { useAuth } from 'src/context/AuthContext';
 
 import { Iconify } from 'src/components/iconify';
 
@@ -22,6 +22,7 @@ export function SignInView() {
     const router = useRouter();
     const [loginRequest, setLoginRequest] = useState<LoginRequest>({ email: '', password: '' });
     const [showPassword, setShowPassword] = useState(false);
+    const { login } = useAuth();
 
     const handleChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
@@ -34,16 +35,10 @@ export function SignInView() {
     const handleSubmit = useCallback(
         async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        try {
-            const { data } = await signIn(loginRequest);
-            // console.log(data.accessToken);
-            localStorage.setItem('accessToken', data.accessToken);
-            router.push('/');
-        } catch (error) {
-            console.error(error);
-        }
+        await login(loginRequest);
+        router.push('/');
         },
-        [loginRequest, router]
+        [login, loginRequest, router]
     );
 
     const renderForm = (

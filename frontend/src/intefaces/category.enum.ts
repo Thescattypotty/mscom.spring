@@ -1,10 +1,9 @@
-
 export enum ECategory {
     STARTERS = 'Starters',
     PASTAS = 'Pastas',
     PIZZAS = 'Pizzas',
     BURGERS = 'Burgers',
-    DESERTS = 'Deserts',
+    DESSERTS = 'Desserts',
     SALADS = 'Salads',
     GRILLED_MEATS = 'Grilled Meats',
     SEAFOODS = 'Seafoods',

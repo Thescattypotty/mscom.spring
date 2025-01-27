@@ -1,7 +1,7 @@
 import type { ECategory } from "./category.enum";
 
 export interface ProductResponse {
-    id: number;
+    id: string;
     name: string;
     description: string;
     category: ECategory;

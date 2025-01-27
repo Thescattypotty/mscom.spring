@@ -13,6 +13,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import { useRouter } from 'src/routes/hooks';
 
 import { ERole } from 'src/intefaces';
+import { useAuth } from 'src/context/AuthContext';
 import { signUp } from 'src/services/auth.service';
 
 import { Iconify } from 'src/components/iconify';
@@ -26,10 +27,12 @@ export function SignUpView() {
         lastName: '',
         email: '',
         password: '',
-        role: [ERole.USER],
+        role: [ERole.ROLE_USER],
         birthday: new Date(),
-    })  
+    })
     const [showPassword, setShowPassword] = useState(false);
+
+    const { register } = useAuth();
 
     const handleChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
@@ -41,16 +44,13 @@ export function SignUpView() {
 
     const handleSubmit = useCallback(
         async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        try {
-            await signUp(registerRequest);
-            // console.log(data.accessToken);
-            router.push('/sign-in');
-        } catch (error) {
-            console.error(error);
-        }
-        },
-        [registerRequest, router]
+            event.preventDefault();
+
+            const registerDec = await register(registerRequest);
+            if(registerDec === true){
+                router.push('/sign-in');
+            }
+        },[register, registerRequest, router]
     );
 
     const renderForm = (

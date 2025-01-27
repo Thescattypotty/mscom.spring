@@ -1,7 +1,7 @@
 import type { ERole } from "./role.enum";
 
 export interface UserResponse {
-    id: number;
+    id: string;
     firstName: string;
     lastName: string;
     email: string;

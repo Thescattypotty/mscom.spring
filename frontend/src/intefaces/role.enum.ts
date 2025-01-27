@@ -1,4 +1,4 @@
 export enum ERole{
-    ADMIN = 'admin',
-    USER = 'user'
+    ROLE_ADMIN = 'Administrateur',
+    ROLE_USER = 'Utilisateur',
 }

@@ -3,7 +3,7 @@
 import type { AxiosResponse } from "axios";
 import axios from "axios";
 import axiosInstance from "src/interceptor/AxiosInstance";
-import type { JwtResponse, LoginRequest, UserCreateRequest } from "src/intefaces";
+import type { JwtResponse, LoginRequest, UserResponse, UserCreateRequest } from "src/intefaces";
 
 const REST_API_URL = "http://localhost:8222/api/v1/auth";
 
@@ -15,3 +15,6 @@ export const signUp = async (registerRequest: UserCreateRequest): Promise<AxiosR
 
 export const signOut = async (): Promise<AxiosResponse<void>> => 
     axiosInstance.post(`${REST_API_URL}/logout`);
+
+export const currentUser = async (): Promise<AxiosResponse<UserResponse>> =>
+    axiosInstance.get(`${REST_API_URL}/me`);

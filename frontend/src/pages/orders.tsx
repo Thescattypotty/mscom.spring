@@ -12,7 +12,6 @@ export default function Page() {
       <Helmet>
         <title> {`Products - ${CONFIG.appName}`}</title>
       </Helmet>
-
       <ProductsView />
     </>
   );

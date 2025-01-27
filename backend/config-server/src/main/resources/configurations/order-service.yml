@@ -1,6 +1,9 @@
 server:
   port: 8030
-
+  
+jwt:
+  secret: ihzu3h4i
+  expiration: 86400000
   # H2 Database Configuration (PostgreSQL compatibility)
 spring:
   datasource:

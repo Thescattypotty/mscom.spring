@@ -1,6 +1,8 @@
 package org.simpleEcom.auth.Service;
 
 import org.simpleEcom.auth.Client.UserClient;
+import org.simpleEcom.auth.Exception.JwtMissingException;
+import org.simpleEcom.auth.Exception.LoginFailedException;
 import org.simpleEcom.auth.IService.IAuthenticationService;
 import org.simpleEcom.auth.Payload.Request.LoginRequest;
 import org.simpleEcom.auth.Payload.Request.RegisterRequest;
@@ -28,7 +30,7 @@ public class AuthenticationService implements IAuthenticationService{
         if(Boolean.TRUE.equals(verification.verified())) {
             return new JwtResponse(jwtService.generateToken(loginRequest.email(),verification.roles()));
         } else {
-            throw new RuntimeException("Invalid credentials");
+            throw new LoginFailedException("Invalid credentials");
         }
     }
 
@@ -41,14 +43,14 @@ public class AuthenticationService implements IAuthenticationService{
     public UserResponse currentUser(){
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         if (attributes == null) {
-            throw new RuntimeException("No request context found");
+            throw new JwtMissingException("No request context found");
         }
 
         HttpServletRequest request = attributes.getRequest();
         String authHeader = request.getHeader("Authorization");
         
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            throw new RuntimeException("Invalid or missing Authorization header");
+            throw new JwtMissingException("Invalid or missing Authorization header");
         }
 
         String token = authHeader.substring(7);

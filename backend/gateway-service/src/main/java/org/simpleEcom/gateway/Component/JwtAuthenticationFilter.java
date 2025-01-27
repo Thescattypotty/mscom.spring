@@ -33,7 +33,6 @@ public class JwtAuthenticationFilter implements WebFilter{
                 authenticationManager.authenticate(new JwtAuthenticationToken(token))
                     .flatMap(authentication -> {
                         SecurityContextHolder.getContext().setAuthentication(authentication);
-                        authentication.setAuthenticated(true);
                         return chain.filter(exchange);
                     })
                     .onErrorResume(e -> {

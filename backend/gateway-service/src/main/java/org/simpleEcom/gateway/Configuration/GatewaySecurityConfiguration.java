@@ -2,6 +2,7 @@ package org.simpleEcom.gateway.Configuration;
 
 import java.util.List;
 
+import org.simpleEcom.gateway.Component.JwtAccessDeniedHandler;
 import org.simpleEcom.gateway.Component.JwtAuthenticationFilter;
 import org.simpleEcom.gateway.Component.JwtLogoutHandler;
 import org.springframework.cloud.gateway.route.RouteLocator;
@@ -44,6 +45,7 @@ public class GatewaySecurityConfiguration {
         "/api/v1/auth/register",
         "/api/v1/auth/login",
         "/api/v1/auth/me",
+        "api/v1/users/**",
         "/api/v1/products/**",
         "/api/v1/orders",
         "/actuator/**",
@@ -52,6 +54,7 @@ public class GatewaySecurityConfiguration {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtLogoutHandler jwtLogoutHandler;
+    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
@@ -90,6 +93,7 @@ public class GatewaySecurityConfiguration {
                     exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
                     return exchange.getResponse().setComplete();
                 })
+                .accessDeniedHandler(jwtAccessDeniedHandler)
             )
             .build();
     }

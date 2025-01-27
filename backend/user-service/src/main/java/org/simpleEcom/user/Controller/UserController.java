@@ -51,6 +51,13 @@ public class UserController {
         return new ResponseEntity<>(userService.getUser(id), HttpStatus.OK);
     }
 
+    @GetMapping("/email")
+    public ResponseEntity<UserResponse> getUserByEmail(
+        @RequestParam(required = true) String email
+    ){
+        return new ResponseEntity<>(userService.getUserByEmail(email), HttpStatus.OK);
+    }
+
     @GetMapping
     public ResponseEntity<Page<UserResponse>> getUsers(
         @RequestParam(defaultValue = "0") int page,

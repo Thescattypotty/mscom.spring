@@ -12,6 +12,7 @@ public interface IUserService {
     void updateUser(String id, UserRequest userRequest);
     void deleteUser(String id);
     UserResponse getUser(String id);
+    UserResponse getUserByEmail(String email);
     Page<UserResponse> getUsers(int page , int size, String sortBy, String order);
     VerificationResponse verifyCredentials(LoginRequest loginRequest);
 }

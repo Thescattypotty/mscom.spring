@@ -25,7 +25,10 @@ spring:
         connection:
           driver_class: org.h2.Driver
         format_sql: true
-
+        
+jwt:
+  secret: ihzu3h4i
+  expiration: 86400000
   
   h2:
     console:

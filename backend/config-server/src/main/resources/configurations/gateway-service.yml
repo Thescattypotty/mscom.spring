@@ -1,6 +1,11 @@
 server:
   port: 8222
 
+
+jwt:
+  secret: ihzu3h4i
+  expiration: 86400000
+  
 spring:
   cloud:
     gateway:

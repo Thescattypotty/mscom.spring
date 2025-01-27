@@ -24,11 +24,13 @@ import org.springframework.web.cors.reactive.CorsConfigurationSource;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
 @EnableWebFluxSecurity
 @Configuration
 @RequiredArgsConstructor
+@Slf4j
 public class GatewaySecurityConfiguration {
     
     private static final List<String> TRUSTED_SERVICES = List.of(
@@ -41,6 +43,7 @@ public class GatewaySecurityConfiguration {
     private static final List<String> OPEN_ENDPOINTS = List.of(
         "/api/v1/auth/register",
         "/api/v1/auth/login",
+        "/api/v1/auth/me",
         "/api/v1/products/**",
         "/api/v1/orders",
         "/actuator/**",
@@ -63,8 +66,11 @@ public class GatewaySecurityConfiguration {
                 .anyExchange().access((authentication, context) -> {
                     ServerHttpRequest request = context.getExchange().getRequest();
                     if(isInternalRequest(request)){
+                        log.info("Internal Request");
                         return Mono.just(new AuthorizationDecision(true));
                     }
+                    log.info("External Request with auth : " + authentication);
+                    authentication.doOnNext(auth -> log.info("Auth : " + auth.getPrincipal().toString())).subscribe();
                     return authentication.map(auth -> new AuthorizationDecision(auth.isAuthenticated()));
                 })
             )
@@ -73,12 +79,14 @@ public class GatewaySecurityConfiguration {
                 logout.logoutUrl("/api/v1/auth/logout")
                     .logoutHandler(jwtLogoutHandler)
                     .logoutSuccessHandler((exchange, authentication) -> {
+                        log.info("Logout Success");
                         exchange.getExchange().getResponse().setStatusCode(HttpStatus.OK);
                         return exchange.getExchange().getResponse().setComplete();
                     })
             )
             .exceptionHandling(exception -> exception
                 .authenticationEntryPoint((exchange, e) -> {
+                    log.info("Unauthorized Request" + " : " + e.getMessage());
                     exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
                     return exchange.getResponse().setComplete();
                 })

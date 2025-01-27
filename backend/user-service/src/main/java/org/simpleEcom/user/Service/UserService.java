@@ -23,9 +23,11 @@ import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserService implements IUserService{
     
     private final UserRepository userRepository;
@@ -66,6 +68,13 @@ public class UserService implements IUserService{
     @Override
     public UserResponse getUser(String id) {
         return userRepository.findById(UUID.fromString(id))
+            .map(userMapper::fromUser)
+            .orElseThrow(() -> new UserNotFoundException());
+    }
+    
+    @Override
+    public UserResponse getUserByEmail(String email) {
+        return userRepository.findByEmail(email)
             .map(userMapper::fromUser)
             .orElseThrow(() -> new UserNotFoundException());
     }

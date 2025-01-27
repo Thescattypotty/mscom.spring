@@ -12,11 +12,13 @@ import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
 @RefreshScope
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JwtAuthenticationFilter implements WebFilter{
     
     private final JwtAuthenticationManager authenticationManager;
@@ -31,9 +33,11 @@ public class JwtAuthenticationFilter implements WebFilter{
                 authenticationManager.authenticate(new JwtAuthenticationToken(token))
                     .flatMap(authentication -> {
                         SecurityContextHolder.getContext().setAuthentication(authentication);
+                        authentication.setAuthenticated(true);
                         return chain.filter(exchange);
                     })
                     .onErrorResume(e -> {
+                        log.error("Error: {}", e.getMessage());
                         exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
                         return exchange.getResponse().setComplete();
                     }

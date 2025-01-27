@@ -19,6 +19,7 @@ public class JwtAuthenticationManager implements ReactiveAuthenticationManager{
     public Mono<Authentication> authenticate(Authentication authentication) {
         return Mono.just(authentication)
             .map(auth -> validateAndSetAuthentication(auth.getCredentials().toString()))
+            .doOnSuccess(auth -> auth.setAuthenticated(true))
             .onErrorResume(e -> Mono.error(new BadCredentialsException("Invalid token")));
     }
 

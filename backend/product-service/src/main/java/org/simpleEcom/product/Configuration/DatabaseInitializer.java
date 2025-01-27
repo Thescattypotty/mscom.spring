@@ -1,5 +1,6 @@
 package org.simpleEcom.product.Configuration;
 
+import java.util.Random;
 import java.util.stream.IntStream;
 
 import org.simpleEcom.product.Entity.Product;
@@ -22,7 +23,9 @@ public class DatabaseInitializer implements CommandLineRunner {
             Product product = Product.builder()
                     .name("Product " + i)
                     .description("Description du produit " + i)
-                    .category(ECategory.HOT_DRINKS)
+                    .category(
+                        ECategory.values()[new Random().nextInt(ECategory.values().length)]
+                    )
                     .imageUrl("https://avatars.githubusercontent.com/u/60051143?v=4")
                     .price(i * 1000.0)
                     .build();

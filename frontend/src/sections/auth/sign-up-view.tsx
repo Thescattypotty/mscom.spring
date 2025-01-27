@@ -69,6 +69,7 @@ export function SignUpView() {
           onChange={handleChange}
           InputLabelProps={{ shrink: true }}
           sx={{ mb: 3 }}
+          required
         />
 
         <TextField
@@ -79,6 +80,7 @@ export function SignUpView() {
           onChange={handleChange}
           InputLabelProps={{ shrink: true }}
           sx={{ mb: 3 }}
+          required
         />
 
         <TextField
@@ -89,12 +91,14 @@ export function SignUpView() {
           onChange={handleChange}
           InputLabelProps={{ shrink: true }}
           sx={{ mb: 3 }}
+          required
         />
 
         <TextField
           fullWidth
           name="password"
           label="Password"
+          autoComplete="new-password"
           value={registerRequest.password}
           onChange={handleChange}
           InputLabelProps={{ shrink: true }}
@@ -109,6 +113,7 @@ export function SignUpView() {
             ),
           }}
           sx={{ mb: 3 }}
+          required
         />
         <TextField
           fullWidth
@@ -124,15 +129,10 @@ export function SignUpView() {
           }}
           InputLabelProps={{ shrink: true }}
           sx={{ mb: 3 }}
+          required
         />
 
-        <LoadingButton
-          fullWidth
-          size="large"
-          type="submit"
-          color="inherit"
-          variant="contained"
-        >
+        <LoadingButton fullWidth size="large" type="submit" color="inherit" variant="contained">
           Sign up
         </LoadingButton>
       </Box>

@@ -30,7 +30,7 @@ export type AccountPopoverProps = IconButtonProps & {
 
 export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps) {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user , logout , isAuthenticated } = useAuth();
 
   const pathname = usePathname();
 
@@ -51,6 +51,11 @@ export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps)
     },
     [handleClosePopover, router]
   );
+
+  const logoutUser = useCallback(() => {
+    logout();
+    router.push('/sign-in');
+  },[logout, router]);
 
   return (
     <>
@@ -85,11 +90,11 @@ export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps)
       >
         <Box sx={{ p: 2, pb: 1.5 }}>
           <Typography variant="subtitle2" noWrap>
-            {user ? `${user.firstName  } ${  user.lastName}` : "user not found"}
+            {user ? `${user.firstName} ${user.lastName}` : 'user not found'}
           </Typography>
 
           <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-            {user ? user.email : "user not found"}
+            {user ? user.email : 'user not found'}
           </Typography>
         </Box>
 
@@ -131,9 +136,15 @@ export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps)
         <Divider sx={{ borderStyle: 'dashed' }} />
 
         <Box sx={{ p: 1 }}>
-          <Button fullWidth color="error" size="medium" variant="text">
-            Logout
-          </Button>
+          {isAuthenticated ? (
+            <Button fullWidth color="error" size="medium" variant="text" onClick={logout}>
+              Logout
+            </Button>
+          ) : (
+            <Button fullWidth color="primary" size="medium" variant="text" onClick={logoutUser}>
+              Sign In
+            </Button>
+          )}
         </Box>
       </Popover>
     </>

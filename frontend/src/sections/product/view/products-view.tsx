@@ -23,24 +23,22 @@ export function ProductsView() {
     const [pageableResponse , setPageableResponse] = useState<PeagableResponse<ProductResponse>>();
     const [pageable, setPeagable] = useState<Pageable>({
       page: 1,
-      size: 10,
+      size: 8,
       sortBy: 'price',
       order: 'desc',
     });
 
     const [open, setOpen] = useState<boolean>(false);
 
-    useEffect(() => {
-        fetchProducts();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [pageable]);
-
     const fetchProducts = async () => {
         const { data } = await listProducts(pageable);
         setPageableResponse(data);
         setProducts(data.content);
-        console.log(data);
     };
+    useEffect(() => {
+      fetchProducts();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [pageable]);
 
     const [sortBy, setSortBy] = useState('price');
 
@@ -69,6 +67,7 @@ export function ProductsView() {
 
     const createNewProduct = async (product: ProductRequest) => {
         await createProduct(product);
+        fetchProducts();
     };
 
     const getAProduct = async (id: string) => {
@@ -90,6 +89,7 @@ export function ProductsView() {
         await updateProduct(selectedProductId, product);
         handleClose();
         setSelectedProductId(null);
+        fetchProducts();
       } catch (error) {
         console.error('Erreur lors de la mise à jour:', error);
       }
@@ -141,8 +141,8 @@ export function ProductsView() {
 
     const handleDelete = async (id: string) => {
         await deleteProduct(id);
-    }
-
+        fetchProducts();
+    };
 
 
     const handlePageChange = useCallback((event: React.ChangeEvent<unknown>, newPage: number) => {
@@ -192,7 +192,7 @@ export function ProductsView() {
               <IconButton onClick={() => editProduct(product.id)}>
                 <Iconify width={24} icon="mdi-light:pencil" />
               </IconButton>
-              <IconButton onClick={() => deleteProduct(product.id)}>
+              <IconButton onClick={() => handleDelete(product.id)}>
                 <Iconify width={24} icon="mdi-light:delete" />
               </IconButton>
             </Grid>

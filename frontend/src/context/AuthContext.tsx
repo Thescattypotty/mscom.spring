@@ -77,6 +77,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     const fetchUser = useCallback(async (): Promise<void> => {
         const { data } = await currentUser();
+        console.log("user Fetched:" ,data);
         setUser(data);
     },[]);
     

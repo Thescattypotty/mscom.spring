@@ -42,46 +42,49 @@ export function SignInView() {
     );
 
     const renderForm = (
-        <Box
+      <Box
         component="form"
         onSubmit={handleSubmit}
         display="flex"
         flexDirection="column"
         alignItems="flex-end"
-        >
+      >
         <TextField
-            fullWidth
-            name="email"
-            label="Email address"
-            value={loginRequest.email}
-            onChange={handleChange}
-            InputLabelProps={{ shrink: true }}
-            sx={{ mb: 3 }}
+          fullWidth
+          name="email"
+          label="Email address"
+          value={loginRequest.email}
+          onChange={handleChange}
+          InputLabelProps={{ shrink: true }}
+          sx={{ mb: 3 }}
+          required
         />
 
         <TextField
-            fullWidth
-            name="password"
-            label="Password"
-            value={loginRequest.password}
-            onChange={handleChange}
-            type={showPassword ? 'text' : 'password'}
-            InputProps={{
+          fullWidth
+          name="password"
+          label="Password"
+          autoComplete="current-password"
+          value={loginRequest.password}
+          onChange={handleChange}
+          type={showPassword ? 'text' : 'password'}
+          InputProps={{
             endAdornment: (
-                <InputAdornment position="end">
+              <InputAdornment position="end">
                 <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
-                    <Iconify icon={showPassword ? 'solar:eye-bold' : 'solar:eye-closed-bold'} />
+                  <Iconify icon={showPassword ? 'solar:eye-bold' : 'solar:eye-closed-bold'} />
                 </IconButton>
-                </InputAdornment>
+              </InputAdornment>
             ),
-            }}
-            sx={{ mb: 3 }}
+          }}
+          sx={{ mb: 3 }}
+          required
         />
 
         <LoadingButton fullWidth size="large" type="submit" color="inherit" variant="contained">
-            Sign in
+          Sign in
         </LoadingButton>
-        </Box>
+      </Box>
     );
 
     return (

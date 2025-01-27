@@ -22,15 +22,9 @@ export const navData = [
     path: '/products',
     icon: icon('ic-cart'),
   },
-
   {
-    title: 'Sign in',
-    path: '/sign-in',
-    icon: icon('ic-lock'),
-  },
-  {
-    title: 'Not found',
-    path: '/404',
-    icon: icon('ic-disabled'),
+    title: 'Orders',
+    path: '/orders',
+    icon: icon('ic-blog'),
   },
 ];

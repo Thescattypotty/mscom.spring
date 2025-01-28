@@ -46,7 +46,7 @@ export function OrderTableRow({
             </TableCell>
             <TableCell component="th" scope="row">
               <Box gap={2} display="flex" alignContent="center">
-                {prod.name}
+                {prod?.name ?? 'N/A'}
               </Box>
             </TableCell>
             <TableCell>{row.quantity}</TableCell>

@@ -4,6 +4,8 @@ import { useState, useEffect, useCallback } from "react";
 
 import { Box, Card, Table, Button, TableBody, Typography, TableContainer, TablePagination } from "@mui/material";
 
+import { useRouter } from "src/routes/hooks";
+
 import { useAuth } from "src/context/AuthContext";
 import { listOrders } from "src/services/order-service";
 import { DashboardContent } from "src/layouts/dashboard";
@@ -20,7 +22,9 @@ import { OrderTableToolbar } from "../order-table-toolbar";
 import { emptyRows, applyFilter, getComparator } from "../utils";
 
 export function OrderView(){
+    const router = useRouter();
     const [orders, setOrders] = useState<OrderResponse[]>([]);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
     const [pageableResponse, setPageableResponse] = useState<PeagableResponse<OrderResponse>>();
     const [pageable, setPageable] = useState<Pageable>({
         page: 0,
@@ -29,27 +33,41 @@ export function OrderView(){
         order: 'desc'
     });
 
-    const [product, setProduct] = useState<ProductResponse>();
+    const [productMap, setProductMap] = useState<Record<string, ProductResponse>>({});
+
+    const fetchOrders = useCallback(async () => {
+      const { data } = await listOrders(pageable);
+      setPageableResponse(data);
+      setOrders(data.content);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[]);
+    
+    useEffect(() => {
+      fetchOrders();
+      async function loadProducts() {
+        const newMap = { ...productMap };
+        await Promise.all(
+          orders.map(async (order) => {
+            if (!newMap[order.productId]) {
+              const { data } = await getProduct(order.productId);
+              newMap[order.productId] = data;
+            }
+          })
+        );
+        setProductMap(newMap);
+        console.log('productMap', newMap);
+      }
+      if (orders.length) {
+        loadProducts();
+      }
+      setIsLoading(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [pageable]);
 
     const { user , isAuthenticated } = useAuth();
 
     const table = useTable(pageable, setPageable);
 
-    useEffect(() => {
-        fetchOrders();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [pageable, setPageable]);
-
-    const fetchOrders = async () => {
-        const { data } = await listOrders(pageable);
-        setPageableResponse(data);
-        setOrders(data.content);
-    };
-
-    const fetchProduct = async(id: string) => {
-        const { data } = await getProduct(id);
-        return data;
-    }
     const editOrder = async(id: string) => {
         console.log("edit order", id);
     }
@@ -70,6 +88,7 @@ export function OrderView(){
           <Button
             variant="contained"
             color="inherit"
+            onClick={() => router.push('/products')}
             startIcon={<Iconify icon="mingcute:add-line" />}
           >
             Make an order
@@ -108,33 +127,36 @@ export function OrderView(){
                     { id: '' },
                   ]}
                 />
-                <TableBody>
-                  {dataFiltred
-                    .slice(
-                      table.page * table.rowsPerPage,
-                      table.page * table.rowsPerPage + table.rowsPerPage
-                    )
-                    .map((row) => (
-                      <OrderTableRow
-                        key={row.id}
-                        row={row}
-                        editOrder={editOrder}
-                        // @ts-ignore
-                        prod={fetchProduct(row.productId)}
-                        selected={table.selected.includes(row.id)}
-                        onSelectRow={() => table.onSelectRow(row.id)}
-                      />
-                    ))}
-                  <TableEmptyRows
-                    height={68}
-                    emptyRows={emptyRows(
-                      table.page,
-                      table.rowsPerPage,
-                      pageableResponse?.totalElements || 0
-                    )}
-                  />
-                  {notFound && <TableNoData searchQuery={filterName} />}
-                </TableBody>
+                {!isLoading ? (
+                  <TableBody>
+                    {dataFiltred
+                      .slice(
+                        table.page * table.rowsPerPage,
+                        table.page * table.rowsPerPage + table.rowsPerPage
+                      )
+                      .map((row) => (
+                        <OrderTableRow
+                          key={row.id}
+                          row={row}
+                          editOrder={editOrder}
+                          prod={productMap[row.productId]}
+                          selected={table.selected.includes(row.id)}
+                          onSelectRow={() => table.onSelectRow(row.id)}
+                        />
+                      ))}
+                    <TableEmptyRows
+                      height={68}
+                      emptyRows={emptyRows(
+                        table.page,
+                        table.rowsPerPage,
+                        pageableResponse?.totalElements || 0
+                      )}
+                    />
+                    {notFound && <TableNoData searchQuery={filterName} />}
+                  </TableBody>
+                ) : (
+                  <Typography>Loading...</Typography>
+                )}
               </Table>
             </TableContainer>
           </Scrollbar>

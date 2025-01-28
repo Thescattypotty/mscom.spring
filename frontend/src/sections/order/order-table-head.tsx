@@ -1,6 +1,5 @@
 import { Box, Checkbox, TableRow, TableCell, TableHead, TableSortLabel } from "@mui/material";
-
-import { visuallyHidden } from "../user/utils";
+import { visuallyHidden } from "./utils";
 
 
 type OrderTableHeadProps = {

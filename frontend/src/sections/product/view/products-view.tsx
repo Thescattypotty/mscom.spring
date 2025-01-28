@@ -5,14 +5,16 @@ import { Grid, Button, Pagination, Typography, IconButton } from '@mui/material'
 
 import { useAuth } from 'src/context/AuthContext';
 import { DashboardContent } from 'src/layouts/dashboard';
+import { createOrder } from 'src/services/order-service';
 import { getProduct, listProducts, createProduct, updateProduct, deleteProduct } from 'src/services/product.service';
-import { ERole, type Pageable, type ProductRequest, type ProductResponse, type PeagableResponse } from 'src/intefaces';
+import { ERole, type Pageable, type ProductRequest, type ProductResponse, type PeagableResponse, OrderRequest } from 'src/intefaces';
 
 import { Iconify } from 'src/components/iconify';
 
 import { ProductForm } from '../product-form';
 import { ProductItem } from '../product-item';
 import { ProductSort } from '../product-sort';
+import { MakeOrderForm } from '../order-form';
 import { CartIcon } from '../product-cart-widget';
 
 // ----------------------------------------------------------------------
@@ -29,6 +31,7 @@ export function ProductsView() {
     });
 
     const [open, setOpen] = useState<boolean>(false);
+    const [openOrder, setOpenOrder] = useState<boolean>(false);
 
     const fetchProducts = async () => {
         const { data } = await listProducts(pageable);
@@ -64,6 +67,12 @@ export function ProductsView() {
     };
 
     const handleClose = () => setOpen(false);
+
+    const handleOpenOrder = () => {
+        setOpenOrder(true);
+        renderMakeOrderForm();
+    }
+    const handleCloseOrder = () => setOpenOrder(false);
 
     const createNewProduct = async (product: ProductRequest) => {
         await createProduct(product);
@@ -126,6 +135,44 @@ export function ProductsView() {
       />
     );
 
+    const [productIdToOrder, setProductIdToOrder] = useState<string | null>(null);
+    const [productOrder, setProductOrder] = useState<ProductResponse | undefined>(undefined);
+
+    useEffect(() => {
+        if(productIdToOrder) {
+            fetchProduct(productIdToOrder).then(setProductOrder);
+            console.log('fetching product');
+        }else{
+            setProductOrder(undefined);
+            console.log('no product to fetch');
+        }
+    },[productIdToOrder]);
+
+    const fetchProduct = async (productId: string) => {
+        const { data } = await getProduct(productId);
+        return data;
+    }
+    const openOrderButton = (productId: string) => {
+        setProductIdToOrder(productId);
+        handleOpenOrder();
+    }
+
+    const handleMakeOrder = async (order: OrderRequest) => {
+        await createOrder(order);
+        handleCloseOrder();
+        setProductIdToOrder(null);
+        setProductOrder(undefined);
+    }
+
+    const renderMakeOrderForm = () => productOrder && (
+        <MakeOrderForm
+            open={openOrder}
+            onClose={handleCloseOrder}
+            product={productOrder}
+            onSubmit={handleMakeOrder}
+            />
+    )
+
     const renderButton = !user?.roles.includes(ERole.ROLE_ADMIN) ? (
     <Button 
       variant='contained' 
@@ -161,6 +208,8 @@ export function ProductsView() {
 
         {open && renderForm()}
 
+        {openOrder && renderMakeOrderForm()}
+
         <CartIcon totalItems={8} />
 
         <Box
@@ -188,7 +237,7 @@ export function ProductsView() {
           {products.map((product) => (
             <Grid key={product.id} xs={12} sm={6} md={3}>
               <ProductItem product={product} />
-
+              <Button onClick={() => openOrderButton(product.id)}>Make Order</Button>
               <IconButton onClick={() => editProduct(product.id)}>
                 <Iconify width={24} icon="mdi-light:pencil" />
               </IconButton>

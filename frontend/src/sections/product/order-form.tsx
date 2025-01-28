@@ -1,38 +1,33 @@
-import { useState, useEffect } from 'react';
+import { Box, Button, Modal, Stack, TextField, Typography } from "@mui/material";
+import { useState } from "react";
 
-import { Box, Modal, Stack, Button, MenuItem, TextField, Typography } from '@mui/material';
-
-import { EOrder, type OrderRequest } from 'src/intefaces';
+import { EOrder, type OrderRequest, type ProductResponse } from "src/intefaces";
 
 
 interface OrderFormProps {
-  open: boolean;
-  onClose: () => void;
-  order?: OrderRequest;
-  onSubmit: (order: OrderRequest) => void;
+    open: boolean;
+    onClose: () => void;
+    product: ProductResponse;
+    onSubmit: (order: OrderRequest) => void;
 }
 
-export function OrderForm({ open, onClose, order, onSubmit }: OrderFormProps) {
+export function MakeOrderForm({ open, onClose, product, onSubmit }: OrderFormProps) {
     const [formData, setFormData] = useState<OrderRequest>({
-        productId: '',
-        quantity: 0,
+        productId: product.id,
+        quantity: 1,
         status: EOrder.PENDING
     });
-
-    useEffect(() => {
-        if (order) {
-            setFormData(order);
-        }
-    }, [order]);
-
+    
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const { name, value } = e.target;
-      setFormData((prev) => ({ ...prev, [name]: value }));
+        const { name, value } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: name === 'quantity' ? Number(value) : value
+        }));
     };
-
     const handleSubmit = (e: React.FormEvent) => {
-      e.preventDefault();
-      onSubmit(formData);
+        e.preventDefault();
+        onSubmit(formData);
     };
 
     return (
@@ -53,37 +48,27 @@ export function OrderForm({ open, onClose, order, onSubmit }: OrderFormProps) {
           }}
         >
           <Typography variant="h5" component="h2" sx={{ mb: 4 }}>
-            Update Order Status
+            Make Order for {product.name}
           </Typography>
           <Stack spacing={3}>
             <TextField
-              select
-              fullWidth
-              label="Status"
-              name="status"
-              value={formData.status}
+              name="quantity"
+              label="Quantity"
+              type="number"
+              value={formData.quantity}
               onChange={handleChange}
               required
-            >
-              {Object.values(EOrder).map((status) => (
-                <MenuItem key={status} value={status}>
-                  {status}
-                </MenuItem>
-              ))}
-            </TextField>
+            />
           </Stack>
-
           <Stack direction="row" spacing={2} sx={{ mt: 4, justifyContent: 'flex-end' }}>
             <Button onClick={onClose} variant="outlined" color="error">
               Cancel
             </Button>
             <Button type="submit" variant="contained" color="primary">
-              Save Changes
+              Make Order
             </Button>
           </Stack>
-
         </Box>
       </Modal>
     );
-
-}
+};

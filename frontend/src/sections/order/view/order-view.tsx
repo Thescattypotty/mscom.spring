@@ -41,11 +41,10 @@ export function OrderView(){
       setOrders(data.content);
     // eslint-disable-next-line react-hooks/exhaustive-deps
     },[]);
-    
-    useEffect(() => {
-      fetchOrders();
-      async function loadProducts() {
+
+    const loadProducts = useCallback(async () => {
         const newMap = { ...productMap };
+        console.log('orders', orders);
         await Promise.all(
           orders.map(async (order) => {
             if (!newMap[order.productId]) {
@@ -56,13 +55,15 @@ export function OrderView(){
         );
         setProductMap(newMap);
         console.log('productMap', newMap);
-      }
-      if (orders.length) {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[]);
+    
+    useEffect(() => {
+        fetchOrders();
         loadProducts();
-      }
       setIsLoading(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [pageable]);
+    }, [pageable, setOrders]);
 
     const { user , isAuthenticated } = useAuth();
 
